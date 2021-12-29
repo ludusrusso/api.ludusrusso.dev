@@ -1,7 +1,10 @@
 import { gql } from "apollo-server-core";
 import { Resolvers } from "../graphql";
+import { DateTimeResolver } from "graphql-scalars";
 
 export const typeDefs = gql`
+  scalar DateTime
+
   type Query {
     _: Boolean!
   }
@@ -12,6 +15,7 @@ export const typeDefs = gql`
 `;
 
 export const resolvers: Resolvers = {
+  DateTime: DateTimeResolver,
   Query: {
     _: () => true,
   },

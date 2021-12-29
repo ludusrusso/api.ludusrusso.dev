@@ -4,6 +4,8 @@ import { hashSync, genSaltSync, compareSync } from "bcrypt";
 import { nowPlusDays } from "../utils/dates";
 import { generateKeyPairSync } from "crypto";
 import jwt from "jsonwebtoken";
+import { Request } from "express";
+import { InvalidTokenError } from "../errors";
 
 const SALT_ROUNDS = 10;
 
@@ -40,6 +42,18 @@ export class AuthService {
     const accessToken = this.createAccessToken(user, key);
     const refreshToken = this.createRefreshToken(user, key);
     return { accessToken, refreshToken };
+  }
+
+  async verifyUser(req: Request): Promise<AccessTokenPayload | undefined> {
+    const authHeader = req.headers["authorization"] as string;
+    if (!authHeader) {
+      return undefined;
+    }
+    const token = getBearerToken(authHeader);
+    if (!token) {
+      throw undefined;
+    }
+    return this.verifyAccessToken(token);
   }
 
   async verifyAccessToken(token: string): Promise<AccessTokenPayload> {
@@ -179,3 +193,13 @@ export class AuthService {
     });
   }
 }
+
+const matchBearerTokenRef = /Bearer (.*)$/;
+
+export const getBearerToken = (auth: string) => {
+  const res = auth.match(matchBearerTokenRef); // ?
+  if (res) {
+    return res[1];
+  }
+  return undefined;
+};

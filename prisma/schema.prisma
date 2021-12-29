@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -25,4 +25,47 @@ model SignKey {
   publicKey  String
   createdAt  DateTime @default(now())
   expiresAt  DateTime
+}
+
+model Participant {
+  id              String         @id @default(cuid())
+  name            String
+  email           String         @unique
+  github          String         @unique
+  bio             String
+  avatar          String?
+  twitter         String?
+  linkedin        String?
+  hostedEpisodes  Episode[]
+  guestedEpisodes EpisodeGuest[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Episode {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  body        String      @default("")
+  resources   String?
+  image       String
+  host        Participant @relation(fields: [hostId], references: [id])
+  hostId      String
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  scheduledTime DateTime
+
+  guests EpisodeGuest[]
+}
+
+model EpisodeGuest {
+  id        Int         @id @default(autoincrement())
+  episode   Episode     @relation(fields: [episodeId], references: [id])
+  guest     Participant @relation(fields: [guestId], references: [id])
+  episodeId String
+  guestId   String
+
+  @@unique([episodeId, guestId])
 }

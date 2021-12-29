@@ -11,6 +11,9 @@ generates:
       enumsAsConst: true
       useIndexSignature: true
       mapperTypeSuffix: Model
+      mappers:
+        Participant: "@prisma/client#Participant"
+        Episode: "@prisma/client#Episode"
   ./graphql.schema.json:
     plugins:
       - "introspection"
